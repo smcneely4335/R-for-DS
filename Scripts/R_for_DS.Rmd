@@ -1,30 +1,86 @@
 ---
-title: "R_for_DS"
+title: "R for Data Science"
 author: "Sam McNeely"
 date: "9/5/2023"
-output: html_document
+output: 
+  html_document:
+    toc: TRUE
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 ```
 
-## R Markdown
+## Ch. 1: Data Visualization with ggplot2  
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Purpose: This first chapter helps us work in reverse. If we see the big picture (AKA the final product of our data wrangling with visualization), then we can better understand what goes into the behind-the-scenes data science.  
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+Before we start working in data visualization, we must load in the necessary packages. Load in the `tidyverse` package, which contains many other packages useful for data science, including ggplot2.
 
-```{r cars}
-summary(cars)
+Load in the `tidyverse` by checking if it is installed on your system. If it is already installed, then simply load it into the current session. However, if it's not already installed on your system, install it and then load it into the current session. Do this by way of an `if-else` statement.
+/*Note: There is a package and a function that can do this: the `pacman` package and the `p_load` function in that package. But using the `if-else` statement is just good practice and not too much work.
+
+```{r}
+if(!require(tidyverse)) {
+  install.packages('tidyverse')
+  library(tidyverse)
+} else {
+  library(tidyverse)
+}
 ```
 
-## Including Plots
+Code explanation:\
+The package we are wanting to utilize is `tidyverse` for visualization purposes. Using the `if-else` statement, we need conditions that output a True value and a False value to determine what needs to happen. The `require()` function assists us with this: if the package argument exists in your system library (in other words, the package is already installed), then it will return `TRUE`, however, if it doesn't exist, then it will return `FALSE`. The `!` essentially negates the code that follows it and outputs a boolean value (i.e., `TRUE` or `FALSE`). For example, if the `tidyverse` package exists on your system, then `!require(tidyverse)` is `FALSE` because `require(tidyverse)` is `TRUE` and would automatically load `tidyverse` into the current session, but `!require(tidyverse)` is `FALSE` because it is the opposite of `require(tidyverse)`.
 
-You can also embed plots, for example:
+Now that we have our conditions set, we just need to place the appropriate code in the corresponding `if-else` statement blocks. 
+We will write the if statement as such: `if(!require(tidyverse))` because the `!` outputs a boolean value. This states that if the `tidyverse` package does not exist on your current system (i.e., `!require(tidyverse) == TRUE`), then do `...` under the if code block. The `...` that we need to do is install the package with `install.packages('tidyverse')` followed by loading it into the current session with `library(tidyverse)`.
+If `!require(tidyverse) == FALSE` (meaning the `tidyverse` package does exist on your system), then the `if` statement code block will be bypassed and the `else` statement code block will be initiated. All that needs to be done is just loading the package into the current session: `library(tidyverse)`.
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+Great job! Now you hopefully understand the reasoning for this `if-else` statement. It looks complicated but it takes care of some checks and balances for you.
+
+Now we can play :)
+
+#### Playing with Plots
+
+We'll start by using the built-in `mpg` dataset, which consists of fuel economy data for various car models.
+
+Let's just input the data into the `ggplot()` function to see what happens.
+
+```{r}
+ggplot(data = mpg)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Shoot... Nothing appeared. That's because we didn't define the independent (x-axis) or dependent (y-axis) variables. These variables are considered aesthetics of the plot, which are "mapped" onto the plot. This is terminology based on the code used for graphing in `ggplot2`. 
+
+Our first argument was `data = mpg`, our dataset. Now we need to assign the independent and dependent variables. But what might they be? Let's inspect the `mpg` dataset:
+1. Find out how many rows are in the dataset.
+2. Find the total number of columns (AKA variables).
+3. Find the names of the columns (i.e., what the variables are).
+
+```{r}
+nrow(mpg)
+ncol(mpg)
+colnames(mpg)
+```
+
+The `dplyr` package (part of the tidyverse package cohort) has a function `glimpse` that can do all three of these functions and provide the first few rows of data per variable.
+
+```{r}
+glimpse(mpg)
+```
+
+Now that we know what the variables are, we can assign the independent and dependent variables:
+1. Try assigning `cyl` as the independent variable and `hwy` as the dependent variable.
+
+```{r}
+ggplot(data = mpg, mapping = aes(x = cyl, y = hwy))
+```
+
+Hmmm, so we got our axes and scales but no points... We need to tell R what how we want to see the plot. If we want to make a scatter plot, then we need to add the `geom_point()` layer to the `ggplot()` function.
+
+```{r}
+ggplot(data = mpg, mapping = aes(x = cyl, y = hwy)) +
+  geom_point()
+```
+
+We have a graph!

@@ -9,7 +9,12 @@
 #############################################
 
 # load tidyverse package: contains ggplot2
-library(tidyverse)
+if(require(tidyverse)) {
+  install.packages('tidyverse')
+  library(tidyverse)
+} else {
+  library(tidyverse)
+}
 
 # try just inputing the data into ggplot()
 ggplot(data = mpg)
